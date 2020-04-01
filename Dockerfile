@@ -7,7 +7,7 @@ ARG ARCH
 COPY qemu-${ARCH}-static /usr/bin
 
 # Begin WyzeSense2MQTT
-LABEL maintainer="Raetha"
+LABEL maintainer="jeblankenship"
 
 ENV TZ="America/New_York"
 
