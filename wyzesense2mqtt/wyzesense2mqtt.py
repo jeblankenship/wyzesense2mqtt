@@ -119,7 +119,7 @@ def init_wyzesense_dongle():
 
 # Initialize sensor configuration
 def init_sensors():
-    SENSORS = []
+    SENSORS = {}
     LOGGER.debug("Reading sensors configuration...")
     if (os.path.isfile(SENSORS_CONFIG_FILE)):
         SENSORS = read_yaml_file(SENSORS_CONFIG_FILE)
