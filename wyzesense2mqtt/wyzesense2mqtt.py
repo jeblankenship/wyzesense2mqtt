@@ -119,7 +119,7 @@ def init_wyzesense_dongle():
 
 # Initialize sensor configuration
 def init_sensors():
-    SENSORS = {}
+    global SENSORS
     LOGGER.debug("Reading sensors configuration...")
     if (os.path.isfile(SENSORS_CONFIG_FILE)):
         SENSORS = read_yaml_file(SENSORS_CONFIG_FILE)
@@ -144,7 +144,6 @@ def init_sensors():
             LOGGER.warning(f"Sensor list failed with result: {result}")
     except TimeoutError:
         pass
-    return SENSORS
 
 # Validate sensor MAC
 def valid_sensor_mac(sensor_mac):
@@ -162,6 +161,7 @@ def valid_sensor_mac(sensor_mac):
 
 # Add sensor to config
 def add_sensor_to_config(sensor_mac, sensor_type, sensor_version):
+    global SENSORS
     SENSORS[sensor_mac] = dict()
     SENSORS[sensor_mac]['name'] = f"Wyze Sense {sensor_mac}"
     SENSORS[sensor_mac]['class'] = (
@@ -177,6 +177,7 @@ def add_sensor_to_config(sensor_mac, sensor_type, sensor_version):
 
 # Send discovery topics
 def send_discovery_topics(sensor_mac):
+    global SENSORS, CONFIG
     LOGGER.info(f"Publishing discovery topics for {sensor_mac}")
 
     sensor_name = SENSORS[sensor_mac]['name']
@@ -239,6 +240,7 @@ def send_discovery_topics(sensor_mac):
 
 # Clear any retained topics in MQTT
 def clear_topics(sensor_mac):
+    global CONFIG
     LOGGER.info("Clearing sensor topics")
     state_topic = f"{CONFIG['self_topic_root']}/{sensor_mac}"
     MQTT_CLIENT.publish(
@@ -263,6 +265,7 @@ def clear_topics(sensor_mac):
 
 
 def on_connect(MQTT_CLIENT, userdata, flags, rc):
+    global CONFIG
     if rc == 0:
         MQTT_CLIENT.subscribe(
                 [(SCAN_TOPIC, CONFIG['mqtt_qos']),
@@ -291,6 +294,7 @@ def on_message(MQTT_CLIENT, userdata, msg):
 
 # Process message to scan for new sensors
 def on_message_scan(MQTT_CLIENT, userdata, msg):
+    global SENSORS
     LOGGER.info(f"In on_message_scan: {msg.payload.decode()}")
 
     try:
@@ -387,7 +391,7 @@ MQTT_CLIENT = init_mqtt_client()
 WYZESENSE_DONGLE = init_wyzesense_dongle()
 
 # Initialize sensor configuration
-SENSORS = init_sensors()
+init_sensors()
 
 # MQTT client loop forever
 MQTT_CLIENT.loop_forever(retry_first_connection=True)
