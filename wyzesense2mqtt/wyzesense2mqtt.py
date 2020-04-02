@@ -119,6 +119,7 @@ def init_wyzesense_dongle():
 
 # Initialize sensor configuration
 def init_sensors():
+    global SENSORS
     LOGGER.debug("Reading sensors configuration...")
     if (os.path.isfile(SENSORS_CONFIG_FILE)):
         SENSORS = read_yaml_file(SENSORS_CONFIG_FILE)
@@ -143,7 +144,6 @@ def init_sensors():
             LOGGER.warning(f"Sensor list failed with result: {result}")
     except TimeoutError:
         pass
-    return SENSORS
 
 # Validate sensor MAC
 def valid_sensor_mac(sensor_mac):
@@ -391,7 +391,7 @@ MQTT_CLIENT = init_mqtt_client()
 WYZESENSE_DONGLE = init_wyzesense_dongle()
 
 # Initialize sensor configuration
-SENSORS = init_sensors()
+init_sensors()
 
 # MQTT client loop forever
 MQTT_CLIENT.loop_forever(retry_first_connection=True)
