@@ -144,7 +144,7 @@ def init_sensors():
             LOGGER.warning(f"Sensor list failed with result: {result}")
     except TimeoutError:
         pass
-
+    return SENSORS
 
 # Validate sensor MAC
 def valid_sensor_mac(sensor_mac):
